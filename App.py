@@ -53,7 +53,7 @@ def inject_auth_token(driver, auth_token):
     time.sleep(2)
 
 def getSearchLink(keywords):
-    converted_string = f"({'OR%20OR%20'.join(keywords)})"
+    converted_string = f"({'OR%20%20'.join(keywords)})"
     return query + converted_string + filter
 
 def contains_required_keywords(tweet):
@@ -63,6 +63,8 @@ def contains_required_keywords(tweet):
             count = count +1
     return count,(count >= required_number_of_keywords)
 def getAccurateTweet(driver,tweets):
+    print("Fetched data length: " +str(len(tweets)))
+    print("now sorting..")
     for tweet in tweets:
         author = tweet["author"]
         content = tweet["content"]
@@ -84,6 +86,7 @@ def get_twitter(driver):
     try:
         url = getSearchLink(keywords)
         driver.get(url)
+        print("the url: " +url)
         time.sleep(5)
         tweets = []
         tweet_hashes = set()  # To track unique tweets
