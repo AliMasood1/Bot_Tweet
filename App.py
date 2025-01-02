@@ -1,13 +1,18 @@
 import hashlib
+import re
 import time
 from datetime import datetime
 
+import requests
 from croniter import croniter
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 
 from webdriver_manager.chrome import ChromeDriverManager
+
+TOKEN_ID = "7645591135:AAHCheX22ciW2sXRDhVcKRX0D4qQrEDLPyo"
+CHAT_ID = "@tweetcatcherhittiessss"
 
 keywords = ["AI", "SOLana", "agent", "pump", "live", "swarm"]
 required_number_of_keywords = 2
@@ -53,7 +58,7 @@ def inject_auth_token(driver, auth_token):
     time.sleep(2)
 
 def getSearchLink(keywords):
-    converted_string = f"({'OR%20%20'.join(keywords)})"
+    converted_string = f"({'%20OR%20'.join(keywords)})"
     return query + converted_string + filter
 
 def contains_required_keywords(tweet):
@@ -62,6 +67,21 @@ def contains_required_keywords(tweet):
         if(key.lower() in tweet.lower()):
             count = count +1
     return count,(count >= required_number_of_keywords)
+
+
+
+def send_telegram_message(message):
+    url = f"https://api.telegram.org/bot{TOKEN_ID}/sendMessage"
+    payload = {
+        "chat_id": CHAT_ID,
+        "text": message
+    }
+    response = requests.post(url, json=payload)
+    if response.status_code == 200:
+        print("Message sent to Telegram.")
+    else:
+        print("Failed to send message:", response.text)
+
 def getAccurateTweet(driver,tweets):
     print("Fetched data length: " +str(len(tweets)))
     print("now sorting..")
@@ -70,7 +90,8 @@ def getAccurateTweet(driver,tweets):
         content = tweet["content"]
         count,containsTheRequiredKeyword = contains_required_keywords(content)
         if(containsTheRequiredKeyword):
-            print(tweet)
+            print(f"Author:: {author}\nTweet Content: {content.strip()}\n==========================")
+            send_telegram_message(f"Author:: {author}\nTweet Content: {content.strip()}\n==========================")
         else:
             driver.get(author)
             time.sleep(3)
@@ -78,7 +99,9 @@ def getAccurateTweet(driver,tweets):
                 bio_element = driver.find_element(By.XPATH, '//div[@data-testid="UserDescription"]').text
                 count2, containsTheRequiredKeyword1 = contains_required_keywords(bio_element)
                 if(count + count2 == required_number_of_keywords):
-                    print(tweet)
+                    print(f"Author:: {author}\nTweet Content: {content.strip()}\n==========================")
+                    send_telegram_message(
+                        f"Author:: {author}\nTweet Content: {content.strip()}\n==========================")
             except:
                 pass
 
