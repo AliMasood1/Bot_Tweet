@@ -9,10 +9,10 @@ from selenium.webdriver.common.by import By
 
 from webdriver_manager.chrome import ChromeDriverManager
 
-keywords = ["AI", "SOL", "having"]
+keywords = ["AI", "SOLana", "agent", "pump", "live", "swarm"]
 required_number_of_keywords = 2
 
-scroll_limit = 20
+scroll_limit = 10
 
 filter = "%20lang%3Aen%20-filter%3Alinks%20-filter%3Areplies&src=typed_query"
 query = "https://x.com/search?f=live&q="
@@ -53,7 +53,7 @@ def inject_auth_token(driver, auth_token):
     time.sleep(2)
 
 def getSearchLink(keywords):
-    converted_string = f"({'%20%20'.join(keywords)})"
+    converted_string = f"({'OR%20OR%20'.join(keywords)})"
     return query + converted_string + filter
 
 def contains_required_keywords(tweet):
